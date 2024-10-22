@@ -10,7 +10,7 @@ class MicroScreen extends StatefulWidget {
 
 class _MicroScreenState extends State<MicroScreen> {
   late stt.SpeechToText _speech;
-  late FlutterTts _flutterTts; // Flutter Text-to-Speech
+  late FlutterTts _flutterTts;
   bool _isListening = false;
   String _speechText = '';
   String _selectedLanguage = "en-US";
@@ -19,22 +19,19 @@ class _MicroScreenState extends State<MicroScreen> {
   void initState() {
     super.initState();
     _initializeSpeech();
-    _initializeTts(); // Inicializar TTS
+    _initializeTts();
   }
 
-  // Inicializar la función de Speech-to-Text
   Future<void> _initializeSpeech() async {
     _speech = stt.SpeechToText();
     await _requestMicrophonePermission();
   }
 
-  // Inicializar la función de Text-to-Speech
   Future<void> _initializeTts() async {
     _flutterTts = FlutterTts();
     await _flutterTts.setLanguage(_selectedLanguage);
   }
 
-  // Pedir permisos de micrófono
   Future<void> _requestMicrophonePermission() async {
     var status = await Permission.microphone.status;
     if (!status.isGranted) {
@@ -42,7 +39,6 @@ class _MicroScreenState extends State<MicroScreen> {
     }
   }
 
-  // Iniciar la grabación de voz
   Future<void> _startListening() async {
     var status = await Permission.microphone.request();
     if (status.isGranted) {
@@ -71,13 +67,11 @@ class _MicroScreenState extends State<MicroScreen> {
     }
   }
 
-  // Detener la grabación de voz
   void _stopListening() {
     setState(() => _isListening = false);
     _speech.stop();
   }
 
-  // Cambiar el idioma para la voz
   void _changeLanguage(String languageCode) {
     setState(() {
       _selectedLanguage = languageCode;
@@ -85,7 +79,6 @@ class _MicroScreenState extends State<MicroScreen> {
     _flutterTts.setLanguage(languageCode);
   }
 
-  // Reproducir el texto como audio usando Text-to-Speech
   Future<void> _speak() async {
     if (_speechText.isNotEmpty) {
       await _flutterTts.speak(_speechText);
@@ -98,8 +91,13 @@ class _MicroScreenState extends State<MicroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Grabar y Reproducir Texto'),
-        backgroundColor: Colors.indigoAccent,
+        title: Text(
+          'Micrófono',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Color(0xFF0D1B2A), // Azul oscuro
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -107,46 +105,75 @@ class _MicroScreenState extends State<MicroScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,  // Fondo blanco
+                  borderRadius: BorderRadius.circular(20),  // Bordes más suaves
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.4),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: Offset(0, 3),  // Sombra más marcada
+                    ),
+                  ],
                 ),
                 child: Text(
                   _speechText.isEmpty
                       ? 'Presiona el micrófono para empezar a grabar...'
                       : _speechText,
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF0D1B2A),  // Azul oscuro para el texto
+                    fontWeight: FontWeight.w500,  // Letra más prominente
+                  ),
+                  textAlign: TextAlign.center,  // Alineación centrada
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
-                  icon: Icon(
-                    _isListening ? Icons.mic_off : Icons.mic,
-                    color: Colors.indigoAccent,
-                    size: 36.0,
-                  ),
+                ElevatedButton(
                   onPressed: _isListening ? _stopListening : _startListening,
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.volume_up,
-                    color: Colors.indigoAccent,
-                    size: 36.0,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF1B263B),  // Azul más claro
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   ),
+                  child: Icon(
+                    _isListening ? Icons.mic_off : Icons.mic,
+                    color: Colors.white,
+                    size: 28.0,
+                  ),
+                ),
+                ElevatedButton(
                   onPressed: _speak,  // Reproduce el texto al presionar el botón
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF1B263B),  // Azul más claro
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  ),
+                  child: Icon(
+                    Icons.volume_up,
+                    color: Colors.white,
+                    size: 28.0,
+                  ),
                 ),
               ],
             ),
           ),
+          SizedBox(height: 20),  // Más espacio en la parte inferior
         ],
       ),
+      backgroundColor: Color(0xFFF5F5F5),  // Fondo gris claro
     );
   }
 }

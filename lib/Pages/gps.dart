@@ -92,29 +92,75 @@ class _GpsScreenState extends State<GpsScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ubicación GPS'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          'Ubicación GPS',
+          style: TextStyle(color: Colors.black),
+        ),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _isLoading
-                ? CircularProgressIndicator() // Indicador de carga mientras se obtiene la ubicación
-                : Text(
-                    _locationMessage ?? '',
-                    textAlign: TextAlign.center,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _isLoading
+                  ? CircularProgressIndicator() // Indicador de carga mientras se obtiene la ubicación
+                  : _locationMessage != ''
+                      ? Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Icon(Icons.location_on,
+                                    color: Colors.greenAccent, size: 40),
+                                SizedBox(height: 10),
+                                Text(
+                                  _locationMessage ?? '',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "Presiona el botón para obtener tu ubicación.",
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _getCurrentLocation,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16.0),
+                  child: Text(
+                    'Obtener Ubicación Actual',
+                    style: TextStyle(fontSize: 16),
                   ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _getCurrentLocation,
-              child: Text('Obtener Ubicación Actual'),
-            ),
-          ],
+                ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.greenAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

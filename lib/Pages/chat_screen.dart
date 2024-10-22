@@ -50,7 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _checkInternetConnection() async { //aqui se verifica lo del internet
+  Future<void> _checkInternetConnection() async {
     try {
       final response = await http.get(Uri.parse('https://google.com'));
       if (response.statusCode == 200) {
@@ -108,14 +108,15 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!_isConnected) {
       setState(() {
         _messages.add(ChatMessage(
-            text: "No se puede enviar el mensaje. Conéctate a Internet.", isUser: false));
+            text: "No se puede enviar el mensaje. Conéctate a Internet.",
+            isUser: false));
       });
       return;
     }
 
     if (_controller.text.isNotEmpty) {
       setState(() {
-        _messages.add(ChatMessage(text: _controller.text, isUser: true)); //se guardan los mensajes
+        _messages.add(ChatMessage(text: _controller.text, isUser: true));
       });
       String userMessage = _controller.text;
       _controller.clear();
@@ -125,7 +126,8 @@ class _ChatScreenState extends State<ChatScreen> {
       });
 
       try {
-        final response = await _chatSession.sendMessage(Content.text(userMessage));
+        final response =
+            await _chatSession.sendMessage(Content.text(userMessage));
         final botResponse = response.text ?? "No se recibió respuesta";
 
         setState(() {
@@ -155,7 +157,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  Future<void> _saveMessages() async { //aqui se guardan los datos
+  Future<void> _saveMessages() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> messagesToSave = _messages
         .take(40)
@@ -164,7 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await prefs.setStringList('chatMessages', messagesToSave);
   }
 
-  Future<void> _loadMessages() async { //aqui se restauran los datos
+  Future<void> _loadMessages() async {
     final prefs = await SharedPreferences.getInstance();
     List<String>? savedMessages = prefs.getStringList('chatMessages');
 
@@ -183,45 +185,56 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Chatbot AI', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.indigoAccent,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          "Chatbot",
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Column(
         children: <Widget>[
           Expanded(
             child: ListView.builder(
               itemCount: _messages.length,
+              padding: EdgeInsets.all(16),
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: Align(
-                    alignment: _messages[index].isUser
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: _messages[index].isUser
-                            ? Colors.indigoAccent
-                            : Colors.grey[300],
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                          bottomLeft: _messages[index].isUser
-                              ? Radius.circular(16)
-                              : Radius.circular(0),
-                          bottomRight: _messages[index].isUser
-                              ? Radius.circular(0)
-                              : Radius.circular(16),
-                        ),
+                return Align(
+                  alignment: _messages[index].isUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _messages[index].isUser
+                          ? Color(0xFF4E73E6)
+                          : Colors.grey.shade200,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                        bottomLeft: _messages[index].isUser
+                            ? Radius.circular(12)
+                            : Radius.circular(0),
+                        bottomRight: _messages[index].isUser
+                            ? Radius.circular(0)
+                            : Radius.circular(12),
                       ),
-                      child: Text(
-                        _messages[index].text,
-                        style: TextStyle(
-                          color: _messages[index].isUser ? Colors.white : Colors.black87,
-                          fontSize: 16,
-                        ),
+                    ),
+                    child: Text(
+                      _messages[index].text,
+                      style: TextStyle(
+                        color: _messages[index].isUser
+                            ? Colors.white
+                            : Colors.black87,
+                        fontSize: 16,
                       ),
                     ),
                   ),
@@ -234,51 +247,31 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: <Widget>[
                 IconButton(
-                  icon: Icon(_isListening ? Icons.mic_off : Icons.mic, color: Colors.indigoAccent),
+                  icon: Icon(
+                    _isListening ? Icons.mic_off : Icons.mic,
+                    color: Colors.black,
+                  ),
                   onPressed: _isListening ? _stopListening : _startListening,
                 ),
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: 'Escribe un mensaje...',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: 'Escribe tu mensaje...',
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.indigoAccent),
+                  icon: Icon(Icons.send, color: Color(0xFF4E73E6)),
                   onPressed: _sendMessage,
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _changeLanguage("en-US"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigoAccent,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text("Inglés (EE.UU.)"),
-                ),
-                ElevatedButton(
-                  onPressed: () => _changeLanguage("es-MX"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigoAccent,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text("Español (México)"),
                 ),
               ],
             ),

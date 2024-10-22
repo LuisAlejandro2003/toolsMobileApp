@@ -8,9 +8,9 @@ class SensoresScreen extends StatefulWidget {
 
 class _SensoresScreenState extends State<SensoresScreen> {
   // Variables para almacenar los datos de los sensores
-  String _accelerometer = "Acelerómetro: esperando datos...";
-  String _gyroscope = "Giroscopio: esperando datos...";
-  String _magnetometer = "Magnetómetro: esperando datos...";
+  String _accelerometer = "Esperando datos...";
+  String _gyroscope = "Esperando datos...";
+  String _magnetometer = "Esperando datos...";
 
   @override
   void initState() {
@@ -19,21 +19,24 @@ class _SensoresScreenState extends State<SensoresScreen> {
     // Escucha los datos del acelerómetro
     accelerometerEvents.listen((AccelerometerEvent event) {
       setState(() {
-        _accelerometer = 'Acelerómetro: \nX: ${event.x}, Y: ${event.y}, Z: ${event.z}';
+        _accelerometer =
+            'X: ${event.x.toStringAsFixed(2)}, Y: ${event.y.toStringAsFixed(2)}, Z: ${event.z.toStringAsFixed(2)}';
       });
     });
 
     // Escucha los datos del giroscopio
     gyroscopeEvents.listen((GyroscopeEvent event) {
       setState(() {
-        _gyroscope = 'Giroscopio: \nX: ${event.x}, Y: ${event.y}, Z: ${event.z}';
+        _gyroscope =
+            'X: ${event.x.toStringAsFixed(2)}, Y: ${event.y.toStringAsFixed(2)}, Z: ${event.z.toStringAsFixed(2)}';
       });
     });
 
     // Escucha los datos del magnetómetro
     magnetometerEvents.listen((MagnetometerEvent event) {
       setState(() {
-        _magnetometer = 'Magnetómetro: \nX: ${event.x}, Y: ${event.y}, Z: ${event.z}';
+        _magnetometer =
+            'X: ${event.x.toStringAsFixed(2)}, Y: ${event.y.toStringAsFixed(2)}, Z: ${event.z.toStringAsFixed(2)}';
       });
     });
   }
@@ -41,20 +44,110 @@ class _SensoresScreenState extends State<SensoresScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sensores del dispositivo'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      // Fondo con degradado para consistencia con las otras vistas
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1B263B), Color(0xFF415A77)], // Degradado moderno
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_accelerometer, style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            Text(_gyroscope, style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            Text(_magnetometer, style: TextStyle(fontSize: 18)),
+            // Barra de App con diseño moderno
+            AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+              title: Text(
+                'Sensores del dispositivo',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            // Contenido de los sensores
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Sección del Acelerómetro
+                    _buildSensorCard(
+                      context,
+                      'Acelerómetro',
+                      _accelerometer,
+                      Icons.speed,
+                      Colors.greenAccent,
+                    ),
+                    SizedBox(height: 20),
+                    // Sección del Giroscopio
+                    _buildSensorCard(
+                      context,
+                      'Giroscopio',
+                      _gyroscope,
+                      Icons.rotate_right,
+                      Colors.blueAccent,
+                    ),
+                    SizedBox(height: 20),
+                    // Sección del Magnetómetro
+                    _buildSensorCard(
+                      context,
+                      'Magnetómetro',
+                      _magnetometer,
+                      Icons.explore,
+                      Colors.purpleAccent,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Widget para mostrar la información de cada sensor en una tarjeta
+  Widget _buildSensorCard(
+    BuildContext context,
+    String sensorName,
+    String sensorData,
+    IconData icon,
+    Color iconColor,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1), // Fondo blanco con opacidad
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3), // Desplazamiento de la sombra
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: iconColor,
+          child: Icon(icon, color: Colors.white),
+        ),
+        title: Text(
+          sensorName,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          sensorData,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.7),
+            fontSize: 16,
+          ),
         ),
       ),
     );

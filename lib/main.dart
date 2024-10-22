@@ -4,7 +4,7 @@ import 'pages/chat_screen.dart';
 import 'pages/gps.dart';
 import 'pages/qr.dart';
 import 'pages/micro.dart';
-import 'pages/sensores.dart';  // Importar la pantalla de sensores
+import 'pages/sensores.dart'; 
 
 void main() {
   runApp(MyApp());
